@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inner Child Clinic - Input</title>
+    <title>내면아이 클리닉 - 정보 입력</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <h1>Inner Child Healing</h1>
+    <h1>내면아이 치유</h1>
 
     {% if error %}
         <p style="color: red; text-align: center;">{{ error }}</p>
@@ -15,14 +15,14 @@
 
     <form id="inputForm">
         <div>
-            <label for="photo">Upload Photo:</label>
+            <label for="photo">사진 업로드:</label>
             <input type="file" id="photo" name="photo" accept="image/*" required>
         </div>
         <div>
-            <label for="trauma">Describe your trauma situation:</label>
+            <label for="trauma">트라우마 상황을 설명해주세요:</label>
             <textarea id="trauma" name="trauma" rows="4" required></textarea>
         </div>
-        <button type="submit">Start Healing</button>
+        <button type="submit">치유 시작하기</button>
     </form>
     <script>
         document.getElementById('inputForm').addEventListener('submit', async function(event) {
@@ -30,43 +30,29 @@
             const formData = new FormData(this);
 
             try {
-                const response = await fetch('/', { // Post to the root route
+                const response = await fetch('/', {
                     method: 'POST',
                     body: formData
                 });
 
                 if (response.ok) {
-                    // Backend handles redirect or indicates success.
-                    // Redirect is to /start_interaction which happens based on server response.
-                    // If server redirects, fetch response.url will be the new URL.
                     if (response.redirected) {
                         window.location.href = response.url;
                     } else {
-                        // Fallback if server doesn't redirect but indicates success
-                        // (though current backend always redirects on success)
                         window.location.href = '/start_interaction';
                     }
                 } else {
-                    // If the server returns an error response (e.g. 400 for missing fields, handled by backend now)
-                    // we might want to display this error on the current page.
-                    // For now, the backend renders index.html again with an error message.
-                    // If the response was, for example, a JSON error, you'd handle it here.
-                    // But since flask handles error by re-rendering index.html, this JS path might not be hit for typical form errors.
-                    console.error('Form submission failed:', response.statusText);
-                    // Attempt to reload to see error message from server if any
-                    // Or parse a JSON error response if the backend sent one.
-                    // window.location.reload(); // This might be too aggressive
-                    // Check if the response contains HTML (the re-rendered page with error)
                     const responseText = await response.text();
                     if (response.headers.get("content-type")?.includes("text/html")) {
                         document.open();
                         document.write(responseText);
                         document.close();
+                    } else {
+                         console.error('Form submission failed:', response.statusText);
                     }
                 }
             } catch (error) {
                 console.error('Error submitting form:', error);
-                // Handle network error appropriately in the UI
             }
         });
     </script>

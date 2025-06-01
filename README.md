@@ -1,102 +1,125 @@
-# Inner Child Clinic Web Application
+# 내면아이 클리닉 (Inner Child Clinic)
 
-This web application is designed to help users interact with a simulated "inner child" persona for therapeutic purposes.
+내면아이 치유를 위한 대화형 웹 애플리케이션입니다. 사용자가 트라우마 상황을 설명하고 내면아이와 대화하며 치유의 과정을 경험할 수 있습니다.
 
-## Features
--   Flask-based Python backend.
--   HTML/CSS/JavaScript frontend.
--   Input page for users to provide a photo (conceptually) and a trauma description.
--   Interaction page displaying:
-    -   A (mocked) AI-generated child image.
-    -   A dialogue system for chatting with the (mocked) AI child.
-    -   A recovery gauge that updates based on (mocked) dialogue scores.
--   Secure API key and configuration management using `.env` files.
+## 주요 기능
 
-## Local Development Setup
+- **트라우마 맞춤형 대화**: 사용자가 설명한 트라우마 상황에 맞춰 내면아이가 공감적인 응답을 제공합니다.
+- **대화 기반 치유 과정**: 대화를 통해 치유 게이지가 채워지며, 사용자의 내면아이 치유 과정을 시각화합니다.
+- **대화 이력 관리**: 대화 컨텍스트를 유지하여 더 자연스럽고 일관된 상호작용을 제공합니다.
+- **반응형 디자인**: 모든 디바이스에서 최적의 사용자 경험을 제공합니다.
 
-Here's how to host this service locally for development:
+## 기술 스택
 
-1.  **Prerequisites:**
-    *   Python 3.7+
-    *   Pip (Python package installer)
-    *   Git (for cloning, if you haven't already)
+- **프레임워크**: Next.js (React)
+- **스타일링**: CSS
+- **AI 통합**: OpenAI API (GPT-4o)
+- **배포**: Vercel
 
-2.  **Clone the Repository (if applicable):**
-    ```bash
-    # git clone <repository_url>
-    # cd <repository_name>
-    ```
+## 로컬 개발 환경 설정
 
-3.  **Create and Activate a Virtual Environment:**
-    It's highly recommended to use a virtual environment to manage project dependencies.
-    ```bash
-    python -m venv venv
-    ```
-    Activate the environment:
-    *   On Windows (Command Prompt/PowerShell):
-        ```bash
-        venv\Scripts\activate
-        ```
-    *   On macOS/Linux (bash/zsh):
-        ```bash
-        source venv/bin/activate
-        ```
-    You should see `(venv)` at the beginning of your terminal prompt.
+### 사전 요구사항
 
-4.  **Install Dependencies:**
-    With your virtual environment activated, install the required packages:
-    ```bash
-    pip install -r requirements.txt
-    ```
+- Node.js 18.x 이상
+- npm 또는 yarn
 
-5.  **Set Up Environment Variables:**
-    *   Copy the example environment file `.env.example` to a new file named `.env`:
-        ```bash
-        # On Windows (PowerShell or Command Prompt)
-        # copy .env.example .env
-        # On macOS/Linux
-        cp .env.example .env
-        ```
-    *   Edit the `.env` file with your actual credentials or placeholders:
-        *   `OPENAI_API_KEY`: For local development with mocked AI responses, you can leave the default placeholder value. If you have an OpenAI API key and want to test with real AI, paste your key here.
-            ```
-            OPENAI_API_KEY="YOUR_OPENAI_API_KEY_HERE_FALLBACK"
-            ```
-        *   `FLASK_SECRET_KEY`: This is used by Flask to secure sessions. Generate a strong secret key. You can use the following command in your terminal and paste the output:
-            ```bash
-            python -c "import os; print(os.urandom(24).hex())"
-            ```
-            Example entry in `.env`:
-            ```
-            FLASK_SECRET_KEY="your_generated_secret_key_here"
-            ```
+### 설치 및 실행 방법
 
-6.  **Run the Flask Development Server:**
-    Ensure you are in the root directory of the project (where `requirements.txt` and the `app` folder are located).
-    ```bash
-    python app/main.py
-    ```
+1. **리포지토리 클론 (해당되는 경우):**
+   ```bash
+   git clone <repository_url>
+   cd nextjs-inner-child-clinic
+   ```
 
-7.  **Access the Application:**
-    Open your web browser and navigate to the address shown in your terminal, which is typically:
-    [http://127.0.0.1:5000/](http://127.0.0.1:5000/) or [http://localhost:5000/](http://localhost:5000/)
+2. **의존성 설치:**
+   ```bash
+   npm install
+   # 또는
+   yarn install
+   ```
 
-The application should now be running locally. The terminal where you executed `python app/main.py` will display server logs and any errors.
+3. **환경 변수 설정:**
+   - `.env.local` 파일 편집:
+     ```
+     OPENAI_API_KEY=your_openai_api_key_here
+     ```
 
-To stop the local server, return to the terminal and press `Ctrl+C`.
+4. **개발 서버 실행:**
+   ```bash
+   npm run dev
+   # 또는
+   yarn dev
+   ```
 
-## Project Structure
--   `app/`: Contains the Flask application.
-    -   `main.py`: The main Flask application file with routes and logic.
-    -   `static/`: For static files (CSS, JavaScript, images).
-        -   `style.css`: Main stylesheet.
-    -   `templates/`: HTML templates.
-        -   `index.html`: The input page.
-        -   `interaction.html`: The page for interacting with the inner child.
--   `requirements.txt`: Python dependencies.
--   `.env.example`: Example file for environment variables.
--   `README.md`: This file.
--   `.gitignore`: Specifies intentionally untracked files that Git should ignore.
+5. **애플리케이션 접속:**
+   웹 브라우저에서 다음 주소로 접속:
+   [http://localhost:3000](http://localhost:3000)
 
-## Notes
-- The AI components (image generation and dialogue) are currently mocked if a valid `OPENAI_API_KEY` is not provided in the `.env` file.
+## Vercel 배포 방법
+
+### 1. Vercel CLI를 통한 배포
+
+1. **Vercel CLI 설치:**
+   ```bash
+   npm install -g vercel
+   # 또는
+   yarn global add vercel
+   ```
+
+2. **Vercel에 로그인:**
+   ```bash
+   vercel login
+   ```
+
+3. **프로젝트 배포:**
+   ```bash
+   vercel
+   ```
+
+4. **환경 변수 설정:**
+   배포 과정에서 환경 변수를 설정하거나, Vercel 대시보드에서 설정할 수 있습니다.
+
+### 2. Vercel 대시보드를 통한 배포
+
+1. [Vercel](https://vercel.com)에 가입하고 로그인합니다.
+
+2. "New Project" 버튼을 클릭합니다.
+
+3. 프로젝트 리포지토리를 가져옵니다 (GitHub, GitLab, Bitbucket 등에서).
+
+4. 프로젝트 설정을 구성합니다:
+   - Framework Preset: Next.js
+   - Root Directory: ./
+   - Build Command: `next build`
+   - Output Directory: .next
+
+5. "Environment Variables" 섹션에서 다음 환경 변수를 추가합니다:
+   - `OPENAI_API_KEY`: OpenAI API 키
+
+6. "Deploy" 버튼을 클릭하여 배포를 시작합니다.
+
+7. 배포가 완료되면 제공된 URL로 애플리케이션에 접속할 수 있습니다.
+
+## 프로젝트 구조
+
+```
+nextjs-inner-child-clinic/
+├── pages/
+│   ├── _app.tsx           # 앱 컴포넌트
+│   ├── index.tsx          # 홈페이지 (트라우마 입력)
+│   ├── chat.tsx           # 대화 페이지
+│   └── api/
+│       └── chat.ts        # 채팅 API 엔드포인트
+├── styles/
+│   └── globals.css        # 전역 스타일
+├── public/                # 정적 파일
+├── package.json           # 프로젝트 의존성
+├── tsconfig.json          # TypeScript 설정
+├── .env.local             # 환경 변수 (git에 포함되지 않음)
+└── README.md              # 이 파일
+```
+
+## 참고 사항
+
+- 유효한 `OPENAI_API_KEY`가 `.env.local` 파일에 제공되지 않으면 AI 응답은 모의(mock) 응답을 사용합니다.
+- 이 서비스는 전문적인 심리 상담을 대체하지 않습니다. 심각한 정신 건강 문제가 있다면 전문가와 상담하세요.

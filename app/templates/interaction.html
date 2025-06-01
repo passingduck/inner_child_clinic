@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inner Child Clinic - Interaction</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Talk to Your Inner Child</h1>
+    <div id="childImageContainer">
+        <img src="{{ image_url }}" alt="Generated Inner Child Image" style="max-width: 512px; max-height: 512px; display: block; margin: auto;">
+    </div>
+    <div id="dialogueBox">
+        <!-- Dialogue will be displayed here by JavaScript -->
+    </div>
+    <div id="gaugeContainer">
+        <label for="recoveryGauge">Recovery Gauge:</label>
+        <progress id="recoveryGauge" value="0" max="10"></progress>
+        <span id="gaugeValue">0/10</span>
+    </div>
+    <div id="userInput">
+        <textarea id="userMessage" placeholder="Talk to the child..."></textarea>
+        <button id="sendMessage">Send</button>
+    </div>
+    <script>
+        const dialogueBox = document.getElementById('dialogueBox');
+        const userMessageInput = document.getElementById('userMessage');
+        const gaugeElement = document.getElementById('recoveryGauge');
+        const gaugeValueElement = document.getElementById('gaugeValue');
+        let currentGaugeValue = 0;
+
+        gaugeElement.value = currentGaugeValue;
+        gaugeValueElement.textContent = currentGaugeValue + '/10';
+
+        dialogueBox.innerHTML = ''; // Ensure it's empty before adding any messages
+
+        // Get initial greeting from template variables, properly escaped by Jinja's |e filter in template
+        const initialGreeting = "{{ initial_greeting|e }}";
+        // const initialGreetingScore = parseInt("{{ initial_greeting_score }}", 10); // Score not used for greeting for now
+
+        if (initialGreeting && initialGreeting !== "None" && initialGreeting.trim() !== "") {
+            appendMessage('Child', initialGreeting);
+            // Optional: If greeting had a score and should affect the gauge
+            // if (!isNaN(initialGreetingScore)) {
+            //     currentGaugeValue += initialGreetingScore;
+            //     currentGaugeValue = Math.max(0, Math.min(10, currentGaugeValue));
+            //     gaugeElement.value = currentGaugeValue;
+            //     gaugeValueElement.textContent = currentGaugeValue + '/10';
+            // }
+        }
+
+        document.getElementById('sendMessage').addEventListener('click', async function() {
+            const messageText = userMessageInput.value.trim();
+            if (messageText === '') return;
+
+            appendMessage('User', messageText);
+            userMessageInput.value = '';
+
+            try {
+                const response = await fetch('/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ message: messageText })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    appendMessage('Child', data.response_text);
+
+                    const score = parseInt(data.score, 10);
+                    if (!isNaN(score)) {
+                        currentGaugeValue += score;
+                        currentGaugeValue = Math.max(0, Math.min(10, currentGaugeValue));
+
+                        gaugeElement.value = currentGaugeValue;
+                        gaugeValueElement.textContent = currentGaugeValue + '/10';
+
+                        console.log('Gauge updated to:', currentGaugeValue);
+
+                        if (currentGaugeValue >= 10) {
+                            appendMessage('System', "The child's mind has been cleared! Healing complete.");
+                            console.log("Healing complete! Gauge reached 10.");
+                            userMessageInput.disabled = true;
+                            document.getElementById('sendMessage').disabled = true;
+                        }
+                    } else {
+                        console.warn("Received an invalid score:", data.score);
+                    }
+
+                } else {
+                    const errorData = await response.json();
+                    console.error('Error sending message:', response.statusText, errorData);
+                    appendMessage('System', `Error: Could not get a response. ${errorData.error || response.statusText}`);
+                }
+            } catch (error) {
+                console.error('Network error:', error);
+                appendMessage('System', 'Error: Network problem connecting to the server.');
+            }
+        });
+
+        function appendMessage(sender, text) {
+            const messageElement = document.createElement('p');
+            const strongElement = document.createElement('strong');
+            strongElement.textContent = sender + ': ';
+            messageElement.appendChild(strongElement);
+            messageElement.appendChild(document.createTextNode(text));
+
+            dialogueBox.appendChild(messageElement);
+            dialogueBox.scrollTop = dialogueBox.scrollHeight;
+        }
+    </script>
+</body>
+</html>
